@@ -1,9 +1,13 @@
 import {useState} from 'react'
 import {useNavigate } from "react-router-dom";
+import { login } from '../redux/user/userSlice';
+import { useDispatch,useSelector } from 'react-redux';
 
 export default function Login() {
   const [formData, setFormData] = useState({});
   const router = useNavigate();
+
+  const dispatch=useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,7 +26,9 @@ export default function Login() {
       })
       const data = await res.json();
 
+
       if (res.ok) {
+        dispatch(login(data));
         router("/");
       } else {
         alert(data.message);
