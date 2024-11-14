@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import AdminHeader from "./components/AdminHeader";
 import AdminHome from "./pages/admin/AdminHome";
 import ProductManagement from "./pages/admin/ProductManagement";
+import CategoryManagement from "./pages/admin/CategoryManagement";
 
 function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -22,6 +23,7 @@ function App() {
             <>
             <Route path="/admin" element={<AdminHome />} />
             <Route path="/admin/product-management" element={<ProductManagement />} />
+            <Route path="/admin/category-management"element={<CategoryManagement/>} />
             </>
           ) : (
             <>

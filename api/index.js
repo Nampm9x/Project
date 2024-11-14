@@ -1,6 +1,8 @@
 import express from 'express';
 import testRoutes from "./routes/index.js";
-import authRoutes from "./routes/auth.route.js"
+import authRoutes from "./routes/auth.route.js";
+import productRoutes from "./routes/product.route.js";
+import categoryRoutes from "./routes/category.route.js";
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 
@@ -20,6 +22,8 @@ app.listen(3000, ()=>{
 app.use(express.json());
 app.use("/api",testRoutes);
 app.use("/api/auth",authRoutes);
+app.use("/api/product",productRoutes);
+app.use("/api/category",categoryRoutes);
 
 app.get('/',(req,res)=> {
     res.send('Hello World');

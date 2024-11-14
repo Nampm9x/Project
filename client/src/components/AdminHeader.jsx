@@ -8,8 +8,8 @@ export default function AdminHeader() {
         <Link className='border-2' to="/admin/users">Quan ly user</Link>
         <Link className='border-2' to="/admin/product-management">Quan ly san pham</Link>
         <Link className='border-2' to="/admin/coupon">Quan ly ma giam gia</Link>
-        <Link className='border-2' to="/admin/category">Quan ly danh muc</Link>
-        <Link className='border-2' to="/admin/category">Quan ly don hang</Link>
+        <Link className='border-2' to="/admin/category-management">Quan ly danh muc</Link>
+        <Link className='border-2' to="/admin/order">Quan ly don hang</Link>
     </div>
   )
 }
