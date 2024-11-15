@@ -19,40 +19,56 @@ export const register = async (req, res, next) => {
     }
     const newUser = new User({ name, email, password: hashPassword });
     await newUser.save();
-    return res.status(201).json({message: "Register successfully"});
+    return res.status(201).json({ message: "Register successfully" });
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const login = async (req, res, next) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+  if (!email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    try {
-        const user = await User.findOne({email});
+    const isMatch = await bcryptjs.compare(password, user.password);
 
-        if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        const isMatch = await bcryptjs.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        const { password: userPassword, ...rest } = user.toObject();
-
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-        return res.status(200).cookie("access_token", token, {
-            httpOnly: true,
-        }).json(rest);
-    } catch (error) {
-        next(error);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
     }
-}
+
+    const { password: userPassword, ...rest } = user.toObject();
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    return res
+      .status(200)
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    return res
+      .status(200)
+      .clearCookie("access_token")
+      .json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

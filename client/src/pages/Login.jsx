@@ -29,7 +29,11 @@ export default function Login() {
 
       if (res.ok) {
         dispatch(login(data));
-        router("/");
+        if (data.isAdmin) {
+          router("/admin");
+        } else {
+          router("/");
+        }
       } else {
         alert(data.message);
       }

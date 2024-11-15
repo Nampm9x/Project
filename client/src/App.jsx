@@ -1,10 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
-import Product from "./pages/Product";
+import Products from "./pages/Product";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Test from "./pages/Test";
 import { useSelector } from "react-redux";
 import AdminHeader from "./components/AdminHeader";
 import AdminHome from "./pages/admin/AdminHome";
@@ -15,27 +14,39 @@ function App() {
   const { currentUser } = useSelector((state) => state.user);
 
   return (
+    <BrowserRouter>
+      <MainContent currentUser={currentUser} />
+    </BrowserRouter>
+  );
+}
+
+function MainContent({ currentUser }) {
+  const location = useLocation(); //
+  const isAdminPath = location.pathname.startsWith("/admin");
+
+  return (
     <>
-      <BrowserRouter>
-        {currentUser && currentUser.isAdmin ? <AdminHeader /> : <Header />}
-        <Routes>
-          {currentUser && currentUser.isAdmin ? (
-            <>
+      {currentUser && currentUser.isAdmin && isAdminPath ? (
+        <AdminHeader />
+      ) : (
+        <Header />
+      )}
+      <Routes>
+        {currentUser && currentUser.isAdmin && isAdminPath ? (
+          <>
             <Route path="/admin" element={<AdminHome />} />
-            <Route path="/admin/product-management" element={<ProductManagement />} />
-            <Route path="/admin/category-management"element={<CategoryManagement/>} />
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<Home />} />
-              <Route path="/product" element={<Product />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/test" element={<Test />} />
-            </>
-          )}
-        </Routes>
-      </BrowserRouter>
+            <Route path="/admin/products" element={<ProductManagement />} />
+            <Route path="/admin/categories" element={<CategoryManagement />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+          </>
+        )}
+      </Routes>
     </>
   );
 }

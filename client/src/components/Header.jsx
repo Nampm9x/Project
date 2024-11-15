@@ -9,7 +9,9 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -22,6 +24,29 @@ function classNames(...classes) {
 
 export default function Example() {
   const { currentUser } = useSelector((state) => state.user);
+  const router=useNavigate()
+  const dispatch=useDispatch()
+
+  const handleLogout=async()=>{
+    try{
+    const res=await fetch("/api/auth/logout",{
+      method:"POST",
+      headers:{
+      "Content-Type":"application/json",
+      }
+    });
+    const data=await res.json();
+    if (res.ok){
+      router("/")
+      alert(data.message);
+      dispatch(logout())
+    } else{
+      alert(data.message);
+    } 
+  } catch(error){
+    console.log(error)
+  }
+} 
   return (
     <Disclosure as="nav" className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -114,12 +139,13 @@ export default function Example() {
                     </a>
                   </MenuItem>
                   <MenuItem>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
+                      onClick={handleLogout}
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Sign out
-                    </a>
+                    </button>
                   </MenuItem>
                 </MenuItems>
               </Menu>
