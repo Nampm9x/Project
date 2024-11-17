@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 export default function AdminHeader() {
   const router=useNavigate()
   const dispatch=useDispatch()
-
   const handleLogout=async()=>{
     try{
     const res=await fetch("/api/auth/logout",{

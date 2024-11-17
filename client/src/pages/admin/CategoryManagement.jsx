@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Category from "../../components/category/Category";
 
 export default function CategoryManagement() {
-  const [categoryName, setCategoryName] = useState("");
+  const [newCategory, setNewCategory] = useState({});
   const [categories, setCategories] = useState([]);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const handleChange = (e) => {
-    setCategoryName(e.target.value);
+    setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -17,16 +18,21 @@ export default function CategoryManagement() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: categoryName }),
+        body: JSON.stringify(newCategory),
       });
 
       const data = await res.json();
 
       if (res.status === 201) {
-        setCategoryName("");
-        setCategories([...categories,data]);
+        setNewCategory({ name: "", category: "" });
+        if(data.parentCategory) {
+          setIsUpdate(!isUpdate);
+        } else{
+          setCategories([...categories, data]);
+        }
+        alert("Thêm danh mục thành công");
       } else {
-        alert(data.message);
+        setNewCategory({ name: "", category: "" });
       }
     } catch (error) {
       console.log(error);
@@ -36,7 +42,7 @@ export default function CategoryManagement() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/category/get-categories");
+        const res = await fetch("/api/category/get-categories"); // lay danh muc
         const data = await res.json();
         setCategories(data);
       } catch (error) {
@@ -44,13 +50,11 @@ export default function CategoryManagement() {
       }
     };
     fetchCategories();
-  }, []);
-
-  console.log(categories);
+  }, [isUpdate]);
 
   return (
     <div className="px-8">
-      <h2 className="py-10 bg-gray-300">Quản lý sản phẩm</h2>
+      <h2 className="py-10 bg-gray-300">Quản lý danh mục</h2>
       <div className="flex justify-between">
         <div className="w-1/5">
           <h3 className="text-xl font-semibold">Thêm danh mục</h3>
@@ -62,7 +66,7 @@ export default function CategoryManagement() {
                 type="text"
                 id="name"
                 name="name"
-                value={categoryName}
+                value={newCategory.name}
                 required
                 className="border-2 w-full"
               />
@@ -74,6 +78,15 @@ export default function CategoryManagement() {
               >
                 Thêm danh mục
               </button>
+              <label htmlFor="category">Chọn danh mục cha</label>
+              <select onChange={handleChange} name="category" id="category">
+                <option value="">Không có</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </form>
         </div>
@@ -88,11 +101,15 @@ export default function CategoryManagement() {
               </tr>
             </thead>
             <tbody>
-            {categories.map((category) => (
-                <div key={category._id}> 
-                <Category category={category}
-                setCategories={setCategories}/>
-                </div>
+              {categories.map((category, index) => (
+                <Category
+                  key={index}
+                  category={category}
+                  setCategories={setCategories}
+                  categories={categories}
+                  isUpdate={isUpdate}
+                  setIsUpdate={setIsUpdate}
+                />
               ))}
             </tbody>
           </table>

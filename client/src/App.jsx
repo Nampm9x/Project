@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
-import Products from "./pages/Product";
+import Product from "./pages/Product";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { useSelector } from "react-redux";
@@ -35,13 +35,13 @@ function MainContent({ currentUser }) {
         {currentUser && currentUser.isAdmin && isAdminPath ? (
           <>
             <Route path="/admin" element={<AdminHome />} />
-            <Route path="/admin/products" element={<ProductManagement />} />
-            <Route path="/admin/categories" element={<CategoryManagement />} />
+            <Route path="/admin/product-management" element={<ProductManagement />} />
+            <Route path="/admin/category-management" element={<CategoryManagement />} />
           </>
         ) : (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
+            <Route path="/products" element={<Product />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
           </>
