@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ChildCategory from "./ChildCategory";
 
 export default function Category({
   category,
@@ -7,18 +8,18 @@ export default function Category({
   isUpdate,
   setIsUpdate,
 }) {
-  const [childrenCategories, setChildrenCategories] = useState([]);
-  const [isShowChildrenCategories, setIsShowChildrenCategories] =
-    useState(false);
+  const [childCategories, setChildCategories] = useState([]);
+  const [isShowChildCategories, setIsShowChildCategories] = useState(false);
   const [isEditCategory, setIsEditCategory] = useState(false);
   const [categoryName, setCategoryName] = useState(category.name);
+  const [isEditChildCategory, setIsEditChildCategory] = useState(false);
 
   const handleChange = (e) => {
     setCategoryName(e.target.value);
   };
 
-  const handleShowChildrenCategories = () => {
-    setIsShowChildrenCategories(!isShowChildrenCategories);
+  const handleShowChildCategories = () => {
+    setIsShowChildCategories(!isShowChildCategories);
   };
 
   const handleChangeEditCategory = () => {
@@ -26,35 +27,39 @@ export default function Category({
   };
 
   const handleDelete = async (id) => {
-    try {
-      const res = await fetch(`/api/category/delete-category/${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (res.status === 200) {
-        setCategories((prev) => prev.filter((category) => category._id !== id));
-        alert(data.message);
-      } else {
-        alert(data.message);
+    if (window.confirm("Bạn có chắc chắn muốn xóa thẻ này không?")) {
+      try {
+        const res = await fetch(`/api/category/delete-category/${id}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+          setCategories((prev) =>
+            prev.filter((category) => category._id !== id)
+          );
+          alert(data.message);
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
 
   useEffect(() => {
-    const fetchChildrenCategories = async () => {
+    const fetchChildCategories = async () => {
       try {
         const res = await fetch(
           `/api/category/get-child-categories/${category._id}`
         );
         const data = await res.json();
-        setChildrenCategories(data);
+        setChildCategories(data);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchChildrenCategories();
+    fetchChildCategories();
   }, [categories]);
 
   const handleEditCategory = async () => {
@@ -78,7 +83,7 @@ export default function Category({
 
   return (
     <tr>
-      <td onClick={handleShowChildrenCategories}>
+      <td>
         {isEditCategory ? (
           <>
             <input
@@ -90,18 +95,24 @@ export default function Category({
             <button
               onClick={handleEditCategory}
               type="button"
-              className="bg-red-500 text-white px-2 py-1"
+              className="bg-green-500 text-white px-2 py-1"
             >
               Lưu
             </button>
           </>
         ) : (
           <>
-            {categoryName}
-            {isShowChildrenCategories && (
+            <p onClick={handleShowChildCategories}>{categoryName}</p>
+            {isShowChildCategories && (
               <ul className="pl-3 text-blue-500">
-                {childrenCategories.map((childrenCategory) => (
-                  <li key={childrenCategory._id}>{childrenCategory.name}</li>
+                {childCategories.map((childCategory,index) => (                 
+                    <ChildCategory
+                      key={index}
+                      setChildCategories={setChildCategories}
+                      childCategory={childCategory}
+                      isUpdate={isUpdate}
+                      setIsUpdate={setIsUpdate}
+                    />                  
                 ))}
               </ul>
             )}
@@ -112,19 +123,19 @@ export default function Category({
       <td>
         <button
           type="button"
-          onClick={() => handleDelete(category._id)}
-          className="bg-red-500 text-white px-2 py-1"
+          onClick={handleChangeEditCategory}
+          className="bg-blue-500 text-white px-2 py-1"
         >
-          Xóa
+          Sửa
         </button>
       </td>
       <td>
         <button
           type="button"
-          onClick={handleChangeEditCategory}
+          onClick={() => handleDelete(category._id)}
           className="bg-red-500 text-white px-2 py-1"
         >
-          Sửa
+          Xóa
         </button>
       </td>
     </tr>

@@ -79,3 +79,30 @@ export const editCategory = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteChildCategory=async (req,res,next)=>{
+  const { id } = req.params;
+  try {
+    await ChildCategory.findByIdAndDelete(id);
+    res.status(200).json({ message: "ChildCategory deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const editChildCategory=async(req,res,next)=>{
+  const { id } = req.params;
+  const { name } = req.body;
+  try {
+    const category = await ChildCategory.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "ChildCategory not found" });
+    }
+    category.name = name;
+    await category.save();
+
+    res.status(200).json(category);
+  } catch (error) {
+    next(error);
+  }
+};

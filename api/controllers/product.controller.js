@@ -17,3 +17,12 @@ export const createProduct = async (req, res, next) => {
         next(error);
     }
 }
+
+export const getProduct=async(req,res,next)=>{
+    try{
+        const product=await Product.find();
+        res.status(200).json(product);
+    }catch(error){
+    next(error);
+    }
+}

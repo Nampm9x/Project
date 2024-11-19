@@ -42,7 +42,7 @@ export default function CategoryManagement() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/category/get-categories"); // lay danh muc
+        const res = await fetch("/api/category/get-categories");
         const data = await res.json();
         setCategories(data);
       } catch (error) {
@@ -53,8 +53,7 @@ export default function CategoryManagement() {
   }, [isUpdate]);
 
   return (
-    <div className="px-8">
-      <h2 className="py-10 bg-gray-300">Quản lý danh mục</h2>
+    <div className="px-8 py-10 bg-gray-300">
       <div className="flex justify-between">
         <div className="w-1/5">
           <h3 className="text-xl font-semibold">Thêm danh mục</h3>

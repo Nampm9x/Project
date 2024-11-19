@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import Modal from "react-modal";
 import {
@@ -9,15 +9,57 @@ import {
 } from "firebase/storage";
 import { app } from "../../firebase";
 
+Modal.setAppElement("#root");
+
 export default function ProductManagement() {
   const [modalCreateProductIsOpen, setModalCreateProductIsOpen] =
     useState(false);
   const [formData, setFormData] = useState({});
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [childCategories, setChildCategories] = useState([]);
+  const [whichCategory, setWhichCategory] = useState("");
+  const [products,setProducts]=useState([])
+
+  useEffect(()=>{
+    const fetchProducts=async ()=>{
+      try{
+        const res=await fetch("/api/product/get-product");
+        const data=await res.json();
+        setProducts(data);
+      }catch(error){
+        console.log(error);
+      }
+    };
+    fetchProducts();
+  },[])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/category/get-categories");
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchCategories();
+  },[]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleGetChildCategories = async (id) => {
+    try {
+      const res = await fetch(`/api/category/get-child-categories/${id}`);
+      const data = await res.json();
+      setChildCategories(data);
+      setWhichCategory(id);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const openCreateProductModal = () => setModalCreateProductIsOpen(true);
@@ -26,17 +68,18 @@ export default function ProductManagement() {
   const handleUploadImage = async () => {
     try {
       if (!file) return;
-  
+
       const storage = getStorage(app);
       const fileName = new Date().getTime() + "-" + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
-  
+
       uploadTask.on(
         "state_changed",
         (snapshot) => {
           // Optional: Handle progress here if needed
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
         (error) => {
@@ -54,19 +97,18 @@ export default function ProductManagement() {
       console.error("Error uploading file:", error);
     }
   };
-  
 
   const handleUploadImages = async () => {
     try {
       if (!files || files.length === 0) return;
-  
+
       const storage = getStorage(app);
-  
+
       const uploadPromises = Array.from(files).map((fileImage, index) => {
         const fileName = `${new Date().getTime()}-${index}-${fileImage.name}`; // Unique filename per image
         const storageRef = ref(storage, fileName);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
-  
+
         return new Promise((resolve, reject) => {
           uploadTask.on(
             "state_changed",
@@ -79,7 +121,7 @@ export default function ProductManagement() {
           );
         });
       });
-  
+
       const downloadURLs = await Promise.all(uploadPromises);
       setFormData({ ...formData, images: downloadURLs });
     } catch (error) {
@@ -97,7 +139,10 @@ export default function ProductManagement() {
         },
         body: JSON.stringify(formData),
       });
+      const data=await response.json() 
       setModalCreateProductIsOpen(false);
+      setFormData({});
+      setProducts([...products,data])
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +151,7 @@ export default function ProductManagement() {
   return (
     <>
       <h2>Product Management</h2>
-      <div className="">So luong san pham: 3</div>
+      <div className="">So luong san pham {products.length}</div>
       <button
         type="button"
         onClick={openCreateProductModal}
@@ -115,6 +160,14 @@ export default function ProductManagement() {
         <IoIosAddCircleOutline />
         San pham
       </button>
+      {products.map((product) => (
+        <div key={product._id}>
+          <img src={product.thumbnail} alt="" className="w-40 h-40" />
+          <div>{product.name}</div>
+          <div>{product.price}</div>
+          <div>{product.category.name}</div>
+        </div>
+      ))}
       <Modal
         isOpen={modalCreateProductIsOpen}
         onRequestClose={closeCreateProductModal}
@@ -164,12 +217,38 @@ export default function ProductManagement() {
             <input onChange={handleChange} type="number" name="price" />
             <br />
             <label htmlFor="">category</label>
-            <select onChange={handleChange} name="category" id="">
-              <option value="ao">ao</option>
-              <option value="quan">quan</option>
-              <option value="giay">giay</option>
-              <option value="mu">mu</option>
-            </select>
+            <div className="flex gap-3">
+              {categories.map((category) => (
+                <div key={category._id}>
+                  <div
+                    onClick={() => handleGetChildCategories(category._id)}
+                    className="px-3 py-1 border"
+                  >
+                    {category.name}
+                  </div>
+                  {whichCategory === category._id &&
+                    childCategories.length > 0 && (
+                      <div>
+                        {childCategories.map((childCategory) => (
+                          <label
+                            htmlFor={`${childCategory._id}`}
+                            key={childCategory._id}
+                          >
+                            {childCategory.name}
+                            <input
+                              type="radio"
+                              id={`${childCategory._id}`}
+                              name="category"
+                              value={childCategory._id}
+                              onChange={handleChange}
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                </div>
+              ))}
+            </div>
             <button type="submit">add</button>
           </form>
         </div>
