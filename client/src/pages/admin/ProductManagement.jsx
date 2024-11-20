@@ -8,6 +8,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../../firebase";
+import Product from "../../components/product/Product";
 
 Modal.setAppElement("#root");
 
@@ -161,12 +162,9 @@ export default function ProductManagement() {
         San pham
       </button>
       {products.map((product) => (
-        <div key={product._id}>
-          <img src={product.thumbnail} alt="" className="w-40 h-40" />
-          <div>{product.name}</div>
-          <div>{product.price}</div>
-          <div>{product.category.name}</div>
-        </div>
+        <Product key={product._id} 
+        product={product} 
+        setProducts={setProducts}/>
       ))}
       <Modal
         isOpen={modalCreateProductIsOpen}

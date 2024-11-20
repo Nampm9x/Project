@@ -25,6 +25,10 @@ const productSchema =new mongoose.Schema({
     images: {
         type: Array,
         default:[],
+    },
+    status: {
+        type:String,
+        default:"active"
     }
 },{ timestamps: true });
 
