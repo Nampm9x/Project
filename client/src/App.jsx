@@ -9,6 +9,7 @@ import AdminHeader from "./components/AdminHeader";
 import AdminHome from "./pages/admin/AdminHome";
 import ProductManagement from "./pages/admin/ProductManagement";
 import CategoryManagement from "./pages/admin/CategoryManagement";
+import ProductDetail from "./pages/ProductDetail";
 
 function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -44,6 +45,7 @@ function MainContent({ currentUser }) {
             <Route path="/products" element={<Product />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/product/:id"element={<ProductDetail/>}/>
           </>
         )}
       </Routes>

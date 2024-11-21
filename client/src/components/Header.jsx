@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  { name: "Product", href: "/product", current: false },
+  { name: "Product", href: "/products", current: false },
 ];
 
 function classNames(...classes) {
