@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Category from "../../components/category/Category";
 
 export default function CategoryManagement() {
-  const [newCategory, setNewCategory] = useState({});
+  const [newCategory, setNewCategory] = useState({ name: "", category: "" });
   const [categories, setCategories] = useState([]);
   const [isUpdate, setIsUpdate] = useState(false);
 
@@ -25,14 +25,10 @@ export default function CategoryManagement() {
 
       if (res.status === 201) {
         setNewCategory({ name: "", category: "" });
-        if(data.parentCategory) {
-          setIsUpdate(!isUpdate);
-        } else{
-          setCategories([...categories, data]);
-        }
-        alert("Thêm danh mục thành công");
+        setIsUpdate(!isUpdate);
+        alert("Thêm danh mục thành công!");
       } else {
-        setNewCategory({ name: "", category: "" });
+        alert("Có lỗi xảy ra!");
       }
     } catch (error) {
       console.log(error);
@@ -44,7 +40,7 @@ export default function CategoryManagement() {
       try {
         const res = await fetch("/api/category/get-categories");
         const data = await res.json();
-        setCategories(data);
+        setCategories(data || []);
       } catch (error) {
         console.log(error);
       }
@@ -53,63 +49,85 @@ export default function CategoryManagement() {
   }, [isUpdate]);
 
   return (
-    <div className="px-8 py-10 bg-gray-300">
+    <div className="bg-gray-100 min-h-screen px-8 py-10">
       <div className="flex justify-between">
-        <div className="w-1/5">
-          <h3 className="text-xl font-semibold">Thêm danh mục</h3>
+        {/* Form thêm danh mục */}
+        <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-4">Thêm danh mục mới</h3>
           <form onSubmit={handleSubmit}>
-            <div className="py-2">
-              <label htmlFor="name">Tên danh mục</label>
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-sm font-medium mb-2">
+                Tên danh mục
+              </label>
               <input
-                onChange={handleChange}
                 type="text"
                 id="name"
                 name="name"
                 value={newCategory.name}
+                onChange={handleChange}
                 required
-                className="border-2 w-full"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-300"
               />
             </div>
-            <div className="py-2">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-2 py-1"
+            <div className="mb-4">
+              <label htmlFor="category" className="block text-sm font-medium mb-2">
+                Danh mục cha
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={newCategory.category}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-300"
               >
-                Thêm danh mục
-              </button>
-              <label htmlFor="category">Chọn danh mục cha</label>
-              <select onChange={handleChange} name="category" id="category">
                 <option value="">Không có</option>
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
+                {categories &&
+                  categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
               </select>
             </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+            >
+              Thêm danh mục
+            </button>
           </form>
         </div>
-        <div className="w-4/5">
-          <h3 className="text-xl font-semibold">Danh sách danh mục</h3>
-          <table className="w-full">
+
+        {/* Danh sách danh mục */}
+        <div className="w-2/3 bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-4">Danh sách danh mục</h3>
+          <table className="w-full border-collapse border border-gray-300 text-left">
             <thead>
-              <tr>
-                <th>Tên danh mục</th>
-                <th>Số lượng sản phẩm</th>
-                <th></th>
+              <tr className="bg-gray-100 text-sm">
+                <th className="py-3 px-4 border-b w-1/3 text-center">Tên danh mục</th>
+                <th className="py-3 px-4 border-b w-1/3 text-center">Số lượng sản phẩm</th>
+                <th className="py-3 px-4 border-b w-1/3 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {categories.map((category, index) => (
-                <Category
-                  key={index}
-                  category={category}
-                  setCategories={setCategories}
-                  categories={categories}
-                  isUpdate={isUpdate}
-                  setIsUpdate={setIsUpdate}
-                />
-              ))}
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <Category
+                    key={category._id}
+                    category={category}
+                    setCategories={setCategories}
+                    categories={categories}
+                    isUpdate={isUpdate}
+                    setIsUpdate={setIsUpdate}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center py-4 text-gray-500">
+                    Không có danh mục nào.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

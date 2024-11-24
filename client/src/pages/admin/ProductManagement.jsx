@@ -21,20 +21,22 @@ export default function ProductManagement() {
   const [categories, setCategories] = useState([]);
   const [childCategories, setChildCategories] = useState([]);
   const [whichCategory, setWhichCategory] = useState("");
-  const [products,setProducts]=useState([])
+  const [products, setProducts] = useState([]);
+  const [searchProduct, setSearchProduct] = useState("");
 
-  useEffect(()=>{
-    const fetchProducts=async ()=>{
-      try{
-        const res=await fetch("/api/product/get-product");
-        const data=await res.json();
+  useEffect(() => {
+    if (searchProduct !== "") return;
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/product/get-product");
+        const data = await res.json();
         setProducts(data);
-      }catch(error){
+      } catch (error) {
         console.log(error);
       }
     };
     fetchProducts();
-  },[])
+  }, [searchProduct]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -47,10 +49,14 @@ export default function ProductManagement() {
       }
     };
     fetchCategories();
-  },[]);
+  }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "quantity" || name === "price" ? Number(value) : value,
+    });
   };
   const handleGetChildCategories = async (id) => {
     try {
@@ -140,19 +146,41 @@ export default function ProductManagement() {
         },
         body: JSON.stringify(formData),
       });
-      const data=await response.json() 
+      const data = await response.json();
       setModalCreateProductIsOpen(false);
       setFormData({});
-      setProducts([...products,data])
+      setProducts([...products, data]);
     } catch (error) {
       console.log(error);
     }
   };
 
+  useEffect(() => {
+    if(searchProduct === "") return;
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`/api/product/search-product/${searchProduct}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProducts();
+  }, [searchProduct]);
+
   return (
     <>
+      
       <h2>Product Management</h2>
       <div className="">So luong san pham {products.length}</div>
+      <input type="text" placeholder="Tìm kiếm sản phẩm" onChange={(e)=>setSearchProduct(e.target.value)}/>
       <button
         type="button"
         onClick={openCreateProductModal}
@@ -162,10 +190,15 @@ export default function ProductManagement() {
         San pham
       </button>
       {products.map((product) => (
-        <Product key={product._id} 
-        product={product} 
-        setProducts={setProducts}/>
+        <Product
+          key={product._id}
+          product={product}
+          setProducts={setProducts}
+        />
       ))}
+      {
+        products.length === 0 && <div>Khong co san pham</div>
+      }
       <Modal
         isOpen={modalCreateProductIsOpen}
         onRequestClose={closeCreateProductModal}
@@ -179,7 +212,7 @@ export default function ProductManagement() {
             <input onChange={handleChange} type="text" name="name" />
             <br />
             <label htmlFor="">quantity</label>
-            <input type="number" name="quantity" onChange={handleChange}/>
+            <input type="number" name="quantity" onChange={handleChange} />
             <label htmlFor="">thumbnail</label>
             <input
               type="file"

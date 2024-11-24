@@ -83,7 +83,7 @@ export default function Category({
 
   return (
     <tr>
-      <td>
+      <td className="text-center">
         {isEditCategory ? (
           <>
             <input
@@ -119,8 +119,8 @@ export default function Category({
           </>
         )}
       </td>
-      <td>{category.quantity}</td>
-      <td>
+      <td className="text-center">{category.quantity}</td>
+      <td className="flex justify-center items-center gap-2">
         <button
           type="button"
           onClick={handleChangeEditCategory}
@@ -128,8 +128,6 @@ export default function Category({
         >
           Sửa
         </button>
-      </td>
-      <td>
         <button
           type="button"
           onClick={() => handleDelete(category._id)}

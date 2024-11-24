@@ -83,7 +83,10 @@ export default function ChildCategory({
           </button>
         </div>
       ) : (
+        <>
         <div>{childCategoryName}</div>
+        <div>{childCategory.quantity}</div>
+        </>
       )}
 
       <div className="flex gap-2">

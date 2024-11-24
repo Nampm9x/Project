@@ -19,12 +19,28 @@ export default function Product({ product, setProducts }) {
     images: currentProduct.images,
     price: currentProduct.price,
     category: currentProduct.category._id,
+    quantity: currentProduct.quantity,
   });
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState(null);
   const [categories, setCategories] = useState([]);
   const [childCategories, setChildCategories] = useState([]);
   const [whichCategory, setWhichCategory] = useState("");
+  const [oldCategory, setOldCategory] = useState("");
+
+  useEffect(() => {
+    const fetchOldCategory = async () => {
+      try {
+        const res = await fetch(`/api/category/get-one-child-category/${currentProduct.category}`);
+        const data = await res.json();
+        setOldCategory(data.name);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchOldCategory();
+  }, []);
+
 
   const openEditProductModal = () => {
     setModalEditProductIsOpen(true);
@@ -35,7 +51,11 @@ export default function Product({ product, setProducts }) {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "quantity" || name === "price" ? Number(value) : value,
+    });
   };
 
   const handleUploadImage = async () => {
@@ -199,6 +219,13 @@ export default function Product({ product, setProducts }) {
               name="name"
             />
             <br />
+            <label htmlFor="">Quantity</label>
+            <input
+              onChange={handleChange}
+              type="number"
+              value={formData.quantity}
+              name="quantity"/>
+              <br/>
             <label htmlFor="">thumbnail</label>
             <input
               type="file"
@@ -251,6 +278,7 @@ export default function Product({ product, setProducts }) {
             />
             <br />
             <label htmlFor="">category</label>
+            <div>old category: {oldCategory}</div>
             <div className="flex gap-3">
               {categories.map((category) => (
                 <div key={category._id}>

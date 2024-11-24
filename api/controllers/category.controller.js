@@ -106,3 +106,16 @@ export const editChildCategory=async(req,res,next)=>{
     next(error);
   }
 };
+
+export const getOneChildCategory = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const childCategory = await ChildCategory.findById(id);
+    if (!childCategory) {
+      return res.status(404).json({ message: "child category not found" });
+    }
+    res.status(200).json(childCategory);
+  } catch (error) {
+    next(error);
+  }
+};
