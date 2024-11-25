@@ -32,7 +32,13 @@ export default function Login() {
         if (data.isAdmin) {
           router("/admin");
         } else {
-          router("/");
+          const redirectCart = localStorage.getItem("redirect-cart");
+          if (redirectCart) {
+            router(redirectCart);
+            localStorage.removeItem("redirect-cart");
+          } else {
+            router("/");
+          }
         }
       } else {
         alert(data.message);
@@ -44,14 +50,14 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center mt-10">
       <form onSubmit={handleSubmit} className="px-10 border py-10">
-        <h2 className="text-center">Login</h2>
+        <h2 className="text-center">Đăng nhập</h2>
         <div className="pt-3 flex gap-3">
           <label htmlFor="email">Email</label>
           <input onChange={handleChange} className="w-full border" type="email" id="email" name="email" required />
         </div>
         <div className="pt-3 flex gap-3">
-          <label htmlFor="password">Password</label>
-          <input onChange={handleChange} className="w-full border" type="password" id="password" name="password" required />
+          <label htmlFor="password">Mật khẩu</label>
+          <input onChange={handleChange} className="border" type="password" id="password" name="password" required />
         </div>
         <div className="flex justify-center mt-4">
         <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Login</button>

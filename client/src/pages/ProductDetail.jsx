@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [currentShow, setCurrentShow] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const {currentUser} = useSelector((state) => state.user);
+  const router = useNavigate();
 
   const handleMinus = () => {
     if (quantity > 1) {
@@ -37,6 +40,34 @@ export default function ProductDetail() {
     };
     fetchProduct();
   }, [id]);
+
+  const handleAddToCart = async () => {
+    if(!currentUser) {
+        alert("Please login to add to cart");
+        localStorage.setItem("redirect-cart", `/product/${id}`);
+        router("/login");
+        return;
+    } 
+    try {
+        const res = await fetch("/api/cart/add-to-cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: currentUser._id,
+                productId: product._id,
+                quantity,
+            }),
+        });
+        const data = await res.json();
+        if(res.ok){
+            alert("Add to cart successfully");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -123,7 +154,7 @@ export default function ProductDetail() {
             <button className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600">
               Mua ngay
             </button>
-            <button className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">
+            <button onClick={handleAddToCart} className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">
               Thêm vào giỏ hàng
             </button>
           </div>

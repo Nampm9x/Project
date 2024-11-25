@@ -241,7 +241,7 @@ export default function Product({ product, setProducts }) {
               upload
             </button>
             <br />
-            <label htmlFor="">product detail</label>
+            <label htmlFor="">Chi tiết sản phẩm</label>
             <input
               type="file"
               name="images"
