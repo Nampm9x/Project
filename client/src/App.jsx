@@ -11,6 +11,7 @@ import ProductManagement from "./pages/admin/ProductManagement";
 import CategoryManagement from "./pages/admin/CategoryManagement";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -48,7 +49,10 @@ function MainContent({ currentUser }) {
             <Route path="/login" element={<Login />} />
             <Route path="/product/:id"element={<ProductDetail/>}/>
             {currentUser ? (
+              <>
               <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout/>}/>
+              </>
             ) : (
               <Route path="/cart" element={<Login />} />
             )}

@@ -1,14 +1,14 @@
 import Cart from "../models/cart.model.js";
 
 export const addToCart = async (req, res, next) => {
-  const { userId, productId, quantity } = req.body;
+  const { userId, productId, quantity, price } = req.body;
   try {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       const newCart = new Cart({
         userId,
-        products: [{ productId, quantity }],
+        products: [{ productId, quantity, price }],
       });
       await newCart.save();
       return res.status(201).json(newCart);
@@ -20,8 +20,9 @@ export const addToCart = async (req, res, next) => {
 
     if (product) {
       product.quantity += quantity;
+      product.price += price;
     } else {
-      cart.products.push({ productId, quantity });
+      cart.products.push({ productId, quantity, price });
     }
 
     await cart.save();
@@ -33,9 +34,9 @@ export const addToCart = async (req, res, next) => {
 };
 
 export const getCart = async (req, res, next) => {
-  const { userId } = req.params;
+  const { userid } = req.params;
   try {
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ userId: userid });
     res.status(200).json(cart);
   } catch (error) {
     next(error);
@@ -43,32 +44,37 @@ export const getCart = async (req, res, next) => {
 };
 
 export const plusQuantity = async (req, res, next) => {
-    const { userId, productId } = req.body;
-    try {
-        const cart = await Cart.findOne({ userId });
-        const product = cart.products.find((product) => product.productId === productId);
-        product.quantity += 1;
-        await cart.save();
-        res.status(200).json(cart);
-    }
-    catch (error) {
-        next(error);
-    }
-}
+  const { userId, productId, price } = req.body;
+  try {
+    const cart = await Cart.findOne({ userId });
+    const product = cart.products.find(
+      (product) => product.productId === productId
+    );
+    product.quantity += 1;
+    product.price += price;
+    await cart.save();
+    res.status(200).json(cart);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const minusQuantity = async (req, res, next) => {
-  const { userId, productId } = req.body;
+  const { userId, productId, price } = req.body;
   try {
-      const cart = await Cart.findOne({ userId });
-      const product = cart.products.find((product) => product.productId === productId);
-      product.quantity -= 1;
-      await cart.save();
-      res.status(200).json(cart);
+    const cart = await Cart.findOne({ userId });
+    const product = cart.products.find(
+      (product) => product.productId === productId
+    );
+    product.quantity -= 1;
+    product.price -= price;
+    await cart.save();
+
+    res.status(200).json(cart);
+  } catch (error) {
+    next(error);
   }
-  catch (error) {
-      next(error);
-  }
-}
+};
 
 export const removeFromCart = async (req, res, next) => {
   const { userId, productId } = req.body;

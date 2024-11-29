@@ -5,52 +5,6 @@ export default function CartDetail({ product: p, isUpdated, setIsUpdated }) {
   const [product, setProduct] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
 
-  const handlePlus = async () => {
-    if (p.quantity >= product.quantity) {
-      alert("Out of stock");
-      return;
-    }
-    try {
-      const res = await fetch("/api/cart/plus-quantity", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: currentUser._id,
-          productId: p.productId,
-        }),
-      });
-      const data = await res.json();
-      setIsUpdated(!isUpdated);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleMinus = async () => {
-    if (p.quantity <= 1) {
-      alert("Out of stock");
-      return;
-    }
-    try {
-      const res = await fetch("/api/cart/minus-quantity", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: currentUser._id,
-          productId: p.productId,
-        }),
-      });
-      const data = await res.json();
-      setIsUpdated(!isUpdated);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -66,21 +20,75 @@ export default function CartDetail({ product: p, isUpdated, setIsUpdated }) {
     fetchProduct();
   }, [p.productId]);
 
-  const handleRemoveFromCart = async () => {
+  const handlePlus = async () => {
+    if (p.quantity >= product.quantity) {
+      alert("Out of stock");
+      return;
+    }
+    const cartToCheckout = JSON.parse(localStorage.getItem("cartToCheckout"));
     try {
-      const res = await fetch("/api/cart/remove-from-cart", {
-        method: "DELETE",
+      await fetch("/api/cart/plus-quantity", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId: currentUser._id,
           productId: p.productId,
+          price: product.price,
         }),
       });
-      const data = await res.json();
       setIsUpdated(!isUpdated);
-      alert("Product removed from cart");
+      if (cartToCheckout.some((item) => item.productId === p.productId)) {
+        localStorage.setItem(
+          "cartToCheckout",
+          JSON.stringify(
+            cartToCheckout.map((item) => {
+              if (item.productId === p.productId) {
+                return { ...item, quantity: item.quantity + 1 };
+              }
+              return item;
+            })
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleMinus = async () => {
+    if (p.quantity <= 1) {
+      alert("Out of stock");
+      return;
+    }
+    const cartToCheckout = JSON.parse(localStorage.getItem("cartToCheckout"));
+    try {
+      await fetch("/api/cart/minus-quantity", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: currentUser._id,
+          productId: p.productId,
+          price: product.price,
+        }),
+      });
+      setIsUpdated(!isUpdated);
+      if (cartToCheckout.some((item) => item.productId === p.productId)) {
+        localStorage.setItem(
+          "cartToCheckout",
+          JSON.stringify(
+            cartToCheckout.map((item) => {
+              if (item.productId === p.productId) {
+                return { ...item, quantity: item.quantity - 1 };
+              }
+              return item;
+            })
+          )
+        );
+      }
     } catch (error) {
       console.log(error);
     }
@@ -90,19 +98,18 @@ export default function CartDetail({ product: p, isUpdated, setIsUpdated }) {
     <div>
       {product && (
         <div className="flex gap-4">
-          <img
+            <img
             src={product.thumbnail}
             alt={product.name}
             className="w-20 h-20"
           />
           <h3>{product.name}</h3>
-          <p>{product.price * p.quantity}</p>
+          <p>{p.price}</p>
           <div className="flex gap-4 items-center">
-          <button onClick={handleMinus}>-</button>
+            <button onClick={handleMinus}>-</button>
             <p>{p.quantity}</p>
             <button onClick={handlePlus}>+</button>
           </div>
-          <button onClick={handleRemoveFromCart}>Xóa</button>
         </div>
       )}
     </div>

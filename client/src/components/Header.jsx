@@ -15,8 +15,8 @@ import { useDispatch } from "react-redux";
 import { FaShoppingCart } from "react-icons/fa";
 
 const navigation = [
-  { name: "Home", href: "/", current: true },
-  { name: "Product", href: "/products", current: false },
+  { name: "Trang chủ", href: "/", current: true },
+  { name: "Sản phẩm", href: "/products", current: false },
 ];
 
 function classNames(...classes) {
@@ -144,7 +144,7 @@ export default function Example() {
                       onClick={handleLogout}
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
-                      Sign out
+                      Đăng xuất
                     </button>
                   </MenuItem>
                 </MenuItems>
@@ -154,7 +154,7 @@ export default function Example() {
                 to="/login"
                 className="border bg-green-500 text-white py-1 px-3 border-green-500 hover:text-green-500 hover:bg-transparent"
               >
-                Login
+                Đăng nhập
               </Link>
             )}
           </div>

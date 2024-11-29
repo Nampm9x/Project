@@ -6,7 +6,8 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [currentShow, setCurrentShow] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const {currentUser} = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
+
   const router = useNavigate();
 
   const handleMinus = () => {
@@ -42,38 +43,38 @@ export default function ProductDetail() {
   }, [id]);
 
   const handleAddToCart = async () => {
-    if(!currentUser) {
-        alert("Please login to add to cart");
-        localStorage.setItem("redirect-cart", `/product/${id}`);
-        router("/login");
-        return;
-    } 
-    try {
-        const res = await fetch("/api/cart/add-to-cart", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId: currentUser._id,
-                productId: product._id,
-                quantity,
-            }),
-        });
-        const data = await res.json();
-        if(res.ok){
-            alert("Add to cart successfully");
-        }
-    } catch (error) {
-        console.log(error);
+    if (!currentUser) {
+      alert("Please login to add to cart");
+      localStorage.setItem("redirect-cart", `/product/${id}`);
+      router("/login");
+      return;
     }
-  }
+    try {
+      const res = await fetch("/api/cart/add-to-cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: currentUser._id,
+          productId: product._id,
+          quantity,
+          price: product.price * quantity,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Add to cart successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       {product && (
         <div className="container mx-auto max-w-4xl p-6 bg-white rounded-lg shadow-md">
-          {/* Image Section */}
           <div className="mb-6">
             <img
               className="w-full h-96 object-cover rounded-lg"
@@ -136,7 +137,6 @@ export default function ProductDetail() {
             </button>
           </div>
 
-          {/* Estimated Price */}
           <div className="text-center text-lg font-medium mb-6">
             <p>
               Ước tính tổng:{" "}

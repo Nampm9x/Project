@@ -14,11 +14,11 @@ import {
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "Home", href: "/admin", current: true },
-  { name: "Product management", href: "/admin/product-management", current: false },
-  { name: "Category management", href: "/admin/category-management", current: false },
-  { name: "Coupon management", href: "/admin/coupon-management", current: false },
-  { name: "Order management", href: "/admin/order-management", current: false },
+  { name: "Trang chủ", href: "/admin", current: true },
+  { name: "Quản lý sản phẩm", href: "/admin/product-management", current: false },
+  { name: "Quản lý danh mục", href: "/admin/category-management", current: false },
+  { name: "Quản lý mã giảm giá", href: "/admin/coupon-management", current: false },
+  { name: "Quản lý đơn hàng", href: "/admin/order-management", current: false },
 ];
 
 function classNames(...classes) {
@@ -149,7 +149,7 @@ export default function AdminHeader() {
                         onClick={handleLogout}
                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                       >
-                        Sign out
+                        Đăng xuất
                       </button>
                     </MenuItem>
                   </MenuItems>
@@ -159,7 +159,7 @@ export default function AdminHeader() {
                   to="/login"
                   className="border bg-green-500 text-white py-1 px-3 border-green-500 hover:text-green-500 hover:bg-transparent"
                 >
-                  Login
+                  Đăng nhập
                 </Link>
               )}
             </div>

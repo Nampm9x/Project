@@ -60,7 +60,7 @@ export default function Login() {
           <input onChange={handleChange} className="border" type="password" id="password" name="password" required />
         </div>
         <div className="flex justify-center mt-4">
-        <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Login</button>
+        <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Đăng nhập</button>
         </div>
       </form>
     </div>

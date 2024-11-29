@@ -35,9 +35,9 @@ export default function Register() {
   return (
     <div className="flex justify-center items-center mt-10">
       <form onSubmit={handleSubmit} className="px-10 border py-10">
-        <h2 className="text-center">Register</h2>
+        <h2 className="text-center">Đăng ký</h2>
         <div className="pt-3 flex gap-3">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Tên người dùng</label>
           <input onChange={handleChange} className="w-full border" type="text" id="name" name="name" required />
         </div>
         <div className="pt-3 flex gap-3">
@@ -45,11 +45,11 @@ export default function Register() {
           <input onChange={handleChange} className="w-full border" type="email" id="email" name="email" required />
         </div>
         <div className="pt-3 flex gap-3">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Mật khẩu</label>
           <input onChange={handleChange} className="w-full border" type="password" id="password" name="password" required />
         </div>
         <div className="flex justify-center mt-4">
-        <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Register</button>
+        <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Đăng ký</button>
         </div>
       </form>
     </div>
