@@ -13,6 +13,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderDetail from "./pages/OrderDetail";
+import ListOrder from "./pages/ListOrder";
 
 
 function App() {
@@ -55,6 +56,7 @@ function MainContent({ currentUser }) {
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout/>}/>
               <Route path="/order/:id" element={<OrderDetail/>}/>
+              <Route path="/order" element={<ListOrder/>}/>
               </>
             ) : (
               <Route path="/cart" element={<Login />} />

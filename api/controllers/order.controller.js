@@ -38,3 +38,25 @@ export const createOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getOrder = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id);
+    res.status(200).json(order);
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
+export const getOrders = async (req, res, next) => {
+  const { user } = req.params;
+  try {
+    const orders = await Order.find({ user });
+    res.status(200).json(orders);
+  }
+  catch (error) {
+    next(error);
+  }
+}

@@ -45,7 +45,7 @@ export default function CartDetail({ product: p, isUpdated, setIsUpdated }) {
           JSON.stringify(
             cartToCheckout.map((item) => {
               if (item.productId === p.productId) {
-                return { ...item, quantity: item.quantity + 1 };
+                return { ...item, quantity: item.quantity + 1, price: item.price + product.price };
               }
               return item;
             })
@@ -82,7 +82,7 @@ export default function CartDetail({ product: p, isUpdated, setIsUpdated }) {
           JSON.stringify(
             cartToCheckout.map((item) => {
               if (item.productId === p.productId) {
-                return { ...item, quantity: item.quantity - 1 };
+                return { ...item, quantity: item.quantity - 1, price: item.price - product.price };
               }
               return item;
             })
