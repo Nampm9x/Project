@@ -27,42 +27,59 @@ export default function Cart() {
   }, [cartToCheckout]);
 
   return (
-    <div>
-      <h1>Cart</h1>
-      {cart &&
-        cart.products.map((product) => (
-          <div key={product.productId} className="flex">
-            <input
-              type="checkbox"
-              name="cart"
-              value={product.productId}
-              checked={cartToCheckout.some(
-                (item) => item.productId === product.productId
-              )}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setCartToCheckout([...cartToCheckout, product]);
-                } else {
-                  setCartToCheckout(
-                    cartToCheckout.filter(
-                      (item) => item.productId !== product.productId
-                    )
-                  );
-                }
-              }}
-            />
-            <CartDetail
-              product={product}
-              setIsUpdated={setIsUpdated}
-              isUpdated={isUpdated}
-            />
-          </div>
-        ))}
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Cart</h1>
+      
+      {cart && cart.products.length > 0 ? (
+        <div className="space-y-4">
+          {cart.products.map((product) => (
+            <div
+              key={product.productId}
+              className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm"
+            >
+              <input
+                type="checkbox"
+                name="cart"
+                value={product.productId}
+                checked={cartToCheckout.some(
+                  (item) => item.productId === product.productId
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setCartToCheckout([...cartToCheckout, product]);
+                  } else {
+                    setCartToCheckout(
+                      cartToCheckout.filter(
+                        (item) => item.productId !== product.productId
+                      )
+                    );
+                  }
+                }}
+                className="w-5 h-5 text-blue-500 focus:ring focus:ring-blue-300 rounded border-gray-300"
+              />
+              <div className="flex-grow">
+                <CartDetail
+                  product={product}
+                  setIsUpdated={setIsUpdated}
+                  isUpdated={isUpdated}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-600 text-center mt-8">Your cart is empty.</p>
+      )}
+      
       {cartToCheckout.length > 0 && (
-        <Link to="/checkout">
-          <button>Checkout</button>
-        </Link>
+        <div className="mt-6 flex justify-end">
+          <Link to="/checkout">
+            <button className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              Checkout
+            </button>
+          </Link>
+        </div>
       )}
     </div>
   );
-}
+}  

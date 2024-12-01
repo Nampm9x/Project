@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ProductDetailForCheckout from "./ProductDetailForCheckout";
 import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 
 export default function Checkout() {
   const cartToCheckout = localStorage.getItem("cartToCheckout");
@@ -11,7 +12,7 @@ export default function Checkout() {
         total += JSON.parse(cartToCheckout)[i].price;
     }
 
-    console.log(total);
+    const navigate=useNavigate()
 
   const handleChange = (e) => {
     setFormData({ ...fromData, [e.target.name]: e.target.value });
@@ -38,8 +39,9 @@ export default function Checkout() {
       });
       const data = await res.json();
       if(res.ok){
-        alert("Order created");
+        alert("Đặt hàng thành công");
         localStorage.removeItem("cartToCheckout");
+        navigate(`/order/${data._id}`);
       }
     } catch (error) {
       console.log(error);
@@ -48,52 +50,71 @@ export default function Checkout() {
 
 
   return (
-    <div>
-      {cartToCheckout ? (
-        JSON.parse(cartToCheckout).map((item, index) => {
-          return (
-            <div key={index}>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      {cartToCheckout && JSON.parse(cartToCheckout).length > 0 ? (
+        <div className="space-y-4 mb-6">
+          {JSON.parse(cartToCheckout).map((item, index) => (
+            <div
+              key={index}
+              className="p-4 bg-white rounded-lg shadow-md flex items-center"
+            >
               <ProductDetailForCheckout item={item} />
             </div>
-          );
-        })
+          ))}
+        </div>
       ) : (
-        <p>Cart is empty</p>
+        <p className="text-gray-600 text-center mt-8">Giỏ hàng trống</p>
       )}
-      <form onSubmit={handleCheckout}>
-        <div className="">
+  
+      <form
+        onSubmit={handleCheckout}
+        className="bg-white p-6 rounded-lg shadow-md space-y-4"
+      >
+        <div className="flex flex-col">
+          <label className="mb-1 text-gray-700 font-medium">Họ và tên</label>
           <input
             type="text"
             onChange={handleChange}
-            placeholder="Full name"
-            className="border"
+            placeholder="Enter your full name"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             name="fullName"
+            required
           />
         </div>
-        <div className="">
+  
+        <div className="flex flex-col">
+          <label className="mb-1 text-gray-700 font-medium">Số điện thoại</label>
           <input
             type="text"
             onChange={handleChange}
-            placeholder="Phone number"
-            className="border"
+            placeholder="Enter your phone number"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             name="phone"
+            required
           />
         </div>
-        <div className="">
+  
+        <div className="flex flex-col">
+          <label className="mb-1 text-gray-700 font-medium">Địa chỉ</label>
           <input
             type="text"
             onChange={handleChange}
-            placeholder="Address"
-            className="border"
+            placeholder="Enter your address"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             name="address"
+            required
           />
         </div>
-        <div className="">
-          <button type="submit" className="border">
-            Submit
+  
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            Đặt hàng
           </button>
         </div>
       </form>
     </div>
   );
-}
+}  
