@@ -64,12 +64,35 @@ export default function ProductDetail() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Add to cart successfully");
+        alert("Thêm vào giỏ thành công");
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleBuyNow = () => {
+    if (!currentUser) {
+      alert("Please login to buy now");
+      localStorage.setItem("redirect-cart", `/product/${id}`);
+      router("/login");
+      return;
+    }
+    localStorage.setItem(
+      "cartToCheckout",
+      JSON.stringify([
+        {
+          price: product.price * quantity, // Tổng giá sản phẩm (nếu mua nhiều)
+          quantity, // Số lượng
+          productId: product._id, // ID sản phẩm
+          _id: product._id, // ID sản phẩm
+        },
+      ])
+    );
+
+
+    router("/checkout");
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -149,9 +172,8 @@ export default function ProductDetail() {
             </p>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-center gap-4">
-            <button className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600">
+            <button onClick={handleBuyNow} className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600">
               Mua ngay
             </button>
             <button onClick={handleAddToCart} className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">

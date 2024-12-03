@@ -68,14 +68,14 @@ export default function Cart() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-600 text-center mt-8">Your cart is empty.</p>
+        <p className="text-gray-600 text-center mt-8">Giỏ hàng trống</p>
       )}
       
       {cartToCheckout.length > 0 && (
         <div className="mt-6 flex justify-end">
           <Link to="/checkout">
             <button className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-              Checkout
+              Đặt hàng 
             </button>
           </Link>
         </div>

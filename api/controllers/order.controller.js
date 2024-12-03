@@ -60,3 +60,45 @@ export const getOrders = async (req, res, next) => {
     next(error);
   }
 }
+
+export const cancelOrder = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id);
+    order.status = "Đã hủy";
+    await order.save();
+
+    order.products.forEach(async (product) => {
+      const productInDB = await Product.findById(product.productId);
+      productInDB.quantity += product.quantity;
+      await productInDB.save();
+    }
+    );
+    res.status(200).json(order);
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
+export const getOrdersForAdmin = async (req, res, next) => {
+  try {
+    const orders = await Order.find({});
+    res.status(200).json(orders);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const updateOrderStatus = async (req, res, next) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const order = await Order.findById(id);
+    order.status = status;
+    await order.save();
+    res.status(200).json(order);
+  } catch (error) {
+    next(error);
+  }
+}

@@ -15,11 +15,11 @@ export const register = async (req, res, next) => {
     if (UserExist) {
       return res
         .status(400)
-        .json({ message: "User with this email already exists " });
+        .json({ message: "Email đã tồn tại " });
     }
     const newUser = new User({ name, email, password: hashPassword });
     await newUser.save();
-    return res.status(201).json({ message: "Register successfully" });
+    return res.status(201).json({ message: "Đăng ký thành công" });
   } catch (error) {
     console.log(error);
   }
@@ -67,7 +67,7 @@ export const logout = async (req, res, next) => {
     return res
       .status(200)
       .clearCookie("access_token")
-      .json({ message: "Logged out successfully" });
+      .json({ message: "Đăng xuất thành công" });
   } catch (error) {
     next(error);
   }
