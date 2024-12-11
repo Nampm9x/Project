@@ -30,6 +30,7 @@ export const createOrder = async (req, res, next) => {
     products.forEach(async (product) => {
       const productInDB = await Product.findById(product.productId);
       productInDB.quantity -= product.quantity;
+      productInDB.sold += product.quantity;
       await productInDB.save();
     });
 
@@ -71,6 +72,7 @@ export const cancelOrder = async (req, res, next) => {
     order.products.forEach(async (product) => {
       const productInDB = await Product.findById(product.productId);
       productInDB.quantity += product.quantity;
+      productInDB.sold -= product.quantity;
       await productInDB.save();
     }
     );
@@ -102,3 +104,35 @@ export const updateOrderStatus = async (req, res, next) => {
     next(error);
   }
 }
+
+export const getPendingOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ status: "Chờ xử lý" });
+    res.status(200).json(orders.length);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getSuccessOrders = async (req, res, next) => {
+
+  try {
+    const orders = await Order.find({ status: "Đã giao" });
+    res.status(200).json(orders.length);
+  } catch (error) {
+    next(error);
+  }
+} 
+
+export const getRevenue = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ status: "Đã giao" });
+    let revenue = 0;
+    orders.forEach((order) => {
+      revenue += order.total;
+    });
+    res.status(200).json(revenue);
+  } catch (error) {
+    next(error);
+  }
+}	

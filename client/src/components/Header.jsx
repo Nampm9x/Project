@@ -16,7 +16,7 @@ import { FaShoppingCart } from "react-icons/fa";
 
 const navigation = [
   { name: "Trang chủ", href: "/", current: true },
-  { name: "Sản phẩm", href: "/products", current: false },
+  { name: "Sản phẩm", href: "/product", current: false },
 ];
 
 function classNames(...classes) {
@@ -104,7 +104,6 @@ export default function Example() {
               <FaShoppingCart className="h-6 w-6" />
             </Link>
 
-            {/* Profile dropdown */}
             {currentUser ? (
               <Menu as="div" className="relative ml-3">
                 <div>

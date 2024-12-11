@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import Rate from "../components/rate/Rate";
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [currentShow, setCurrentShow] = useState("");
   const [quantity, setQuantity] = useState(1);
   const { currentUser } = useSelector((state) => state.user);
+  const [rates, setRates] = useState([]);
 
   const router = useNavigate();
 
@@ -27,6 +29,19 @@ export default function ProductDetail() {
   };
 
   const { id } = useParams();
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const res = await fetch(`/api/rate/get-rates/${id}`);
+        const data = await res.json();
+        setRates(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchRates();
+  }, [id]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -73,7 +88,7 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     if (!currentUser) {
-      alert("Please login to buy now");
+      alert("Đăng nhập để mua");
       localStorage.setItem("redirect-cart", `/product/${id}`);
       router("/login");
       return;
@@ -82,17 +97,16 @@ export default function ProductDetail() {
       "cartToCheckout",
       JSON.stringify([
         {
-          price: product.price * quantity, // Tổng giá sản phẩm (nếu mua nhiều)
-          quantity, // Số lượng
-          productId: product._id, // ID sản phẩm
-          _id: product._id, // ID sản phẩm
+          price: product.price * quantity,
+          quantity,
+          productId: product._id,
+          _id: product._id,
         },
       ])
     );
 
-
     router("/checkout");
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -100,7 +114,7 @@ export default function ProductDetail() {
         <div className="container mx-auto max-w-4xl p-6 bg-white rounded-lg shadow-md">
           <div className="mb-6">
             <img
-              className="w-full h-96 object-cover rounded-lg"
+              className="w-full h-[300px] object-contain rounded-lg"
               src={currentShow}
               alt={product.name}
             />
@@ -131,19 +145,20 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Product Info Section */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
             <p className="text-2xl text-red-500 font-semibold mb-2">
-              Giá: {new Intl.NumberFormat("vi-VN", {
+              Giá:{" "}
+              {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
               }).format(product.price)}
             </p>
-            <p className="text-gray-600">Số lượng trong kho: {product.quantity}</p>
+            <p className="text-gray-600">
+              Số lượng trong kho: {product.quantity}
+            </p>
           </div>
 
-          {/* Quantity Selector */}
           <div className="flex justify-center items-center gap-4 mb-6">
             <button
               onClick={handleMinus}
@@ -173,13 +188,29 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex justify-center gap-4">
-            <button onClick={handleBuyNow} className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600">
+            <button
+              onClick={handleBuyNow}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
+            >
               Mua ngay
             </button>
-            <button onClick={handleAddToCart} className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">
+            <button
+              onClick={handleAddToCart}
+              className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600"
+            >
               Thêm vào giỏ hàng
             </button>
           </div>
+          {rates && rates.length > 0 && (
+            <div>
+              <h2>Đánh giá sản phẩm</h2>
+              {rates.map((rate, index) => (
+                <div key={index}>
+                  <Rate rate={rate} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

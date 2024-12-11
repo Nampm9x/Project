@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js";
-import ChildCategory from './../models/childCategory.model.js';
-import Category from './../models/category.model.js';
+import ChildCategory from "./../models/childCategory.model.js";
+import Category from "./../models/category.model.js";
 
 export const createProduct = async (req, res, next) => {
   try {
@@ -29,11 +29,19 @@ export const createProduct = async (req, res, next) => {
 };
 
 export const getProduct = async (req, res, next) => {
+  const { page, limit } = req.query;
   try {
-    const product = await Product.find({
+    const products = await Product.find({
       status: { $ne: "deleted" },
     });
-    res.status(200).json(product);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const productToReturn = products.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      product: products.length,
+      products: productToReturn,
+    });
   } catch (error) {
     next(error);
   }
@@ -46,11 +54,11 @@ export const deleteProduct = async (req, res, next) => {
     if (!product) {
       return res
         .status(404)
-        .json({ message: `Product with id ${id} not found` });
+        .json({ message: `Không tìm thấy id sản phẩm ${id}` });
     }
     product.status = "deleted";
     await product.save();
-    res.status(200).json({ message: "Product deleted" });
+    res.status(200).json({ message: "Xóa sản phẩm thành công" });
   } catch (error) {
     next(error);
   }
@@ -63,7 +71,7 @@ export const editProduct = async (req, res, next) => {
     if (!product) {
       return res
         .status(404)
-        .json({ message: `Product with id ${id} not found` });
+        .json({ message: `Không tìm thấy id sản phẩm ${id}` });
     }
     const oldQuantity = product.quantity;
     product.name = name;
@@ -97,29 +105,86 @@ export const getProductForUser = async (req, res, next) => {
   }
 };
 
-export const getProductByID=async(req,res,next)=>{
-  try{
+export const getProductByID = async (req, res, next) => {
+  try {
     const { id } = req.params;
     const product = await Product.findById(id);
     if (!product) {
       return res
         .status(404)
-        .json({ message: `Product with id ${id} not found` });
+        .json({ message: `Không tìm thấy id sản phẩm ${id}` });
     }
     res.status(200).json(product);
   } catch (error) {
     next(error);
   }
-}
+};
+
+export const getProductByCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.find({
+      category: id,
+      status: "active",
+      quantity: { $gt: 0 },
+    });
+    res.status(200).json(product);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const searchProduct = async (req, res, next) => {
   try {
     const { search } = req.params;
     const products = await Product.find({
       name: { $regex: search, $options: "i" },
-      status:{$ne:"deleted"}
+      status: { $ne: "deleted" },
     });
     res.status(200).json(products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const searchProductForUsers = async (req, res, next) => {
+  try {
+    const { search } = req.params;
+    const products = await Product.find({
+      name: { $regex: search, $options: "i" },
+      status: "active",
+      quantity: { $gt: 0 },
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProductFeatured = async (req, res, next) => {
+  try {
+    const products = await Product.find({
+      status: "active",
+      quantity: { $gt: 0 },
+    })
+      .limit(4)
+      .sort({ sold: -1 });
+    res.status(200).json(products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const productsSold = async (req, res, next) => {
+  try {
+    const products = await Product.find({
+      sold: { $gt: 0 },
+    }).sort({ sold: -1 });
+    let productsSold = 0;
+    products.forEach((product) => {
+      productsSold += product.sold;
+    });
+    res.status(200).json(productsSold);
   } catch (error) {
     next(error);
   }

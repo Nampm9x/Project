@@ -56,7 +56,7 @@ function MainContent({ currentUser }) {
         ) : (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Product />} />
+            <Route path="/product" element={<Product />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/product/:id" element={<ProductDetail />} />

@@ -6,17 +6,17 @@ export const createCategory = async (req, res, next) => {
   try {
     if (!category) {
       const existingCategory = await Category.findOne({ name });
-
       if (existingCategory) {
-        return res.status(400).json({ message: "Category already exist" });
+        return res.status(400).json({ message: "Danh mục đã tồn tại" });
       }
       const category = new Category({ name });
       await category.save();
       res.status(201).json(category);
     } else {
-      const existingCategory = await ChildCategory.findOne({ name });
-      if (existingCategory) {
-        return res.status(400).json({ message: "Category already exists" });
+      const existingChildCategory = await ChildCategory.findOne({ name,parentCategory:category });
+      
+      if (existingChildCategory) {
+        return res.status(400).json({message:"Danh mục con đã tồn tại"});
       }
       const childCategory = new ChildCategory({
         name,
@@ -45,7 +45,7 @@ export const getChildCategories = async (req, res, next) => {
   try {
     const childCategories = await ChildCategory.find({ parentCategory: id });
     if (!childCategories) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Không tìm thấy danh mục " });
     }
     res.status(200).json(childCategories);
   } catch (error) {
@@ -57,7 +57,7 @@ export const deleteCategory = async (req, res, next) => {
   const { id } = req.params;
   try {
     await Category.findByIdAndDelete(id);
-    res.status(200).json({ message: "Category deleted successfully" });
+    res.status(200).json({ message: "Xóa danh mục thành công" });
   } catch (error) {
     next(error);
   }
@@ -69,7 +69,7 @@ export const editCategory = async (req, res, next) => {
   try {
     const category = await Category.findById(id);
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "Không tìm thấy danh mục" });
     }
     category.name = name;
     await category.save();
@@ -84,7 +84,7 @@ export const deleteChildCategory=async (req,res,next)=>{
   const { id } = req.params;
   try {
     await ChildCategory.findByIdAndDelete(id);
-    res.status(200).json({ message: "ChildCategory deleted successfully" });
+    res.status(200).json({ message: "Xóa danh mục con thành công" });
   } catch (error) {
     next(error);
   }
@@ -96,7 +96,7 @@ export const editChildCategory=async(req,res,next)=>{
   try {
     const category = await ChildCategory.findById(id);
     if (!category) {
-      return res.status(404).json({ message: "ChildCategory not found" });
+      return res.status(404).json({ message: "Không tìm thấy danh mục con" });
     }
     category.name = name;
     await category.save();
@@ -112,7 +112,7 @@ export const getOneChildCategory = async (req, res, next) => {
   try {
     const childCategory = await ChildCategory.findById(id);
     if (!childCategory) {
-      return res.status(404).json({ message: "child category not found" });
+      return res.status(404).json({ message: "Không tìm thấy danh mục con" });
     }
     res.status(200).json(childCategory);
   } catch (error) {

@@ -6,7 +6,7 @@ export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
   }
 
   try {
@@ -29,20 +29,20 @@ export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
   }
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Thông tin không hợp lệ" });
     }
 
     const isMatch = await bcryptjs.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Thông tin không hợp lệ" });
     }
 
     const { password: userPassword, ...rest } = user.toObject();

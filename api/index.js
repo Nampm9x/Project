@@ -7,6 +7,8 @@ import cartRoutes from "./routes/cart.route.js";
 import orderRoutes from"./routes/order.route.js";
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser';
+import rateRoutes from "./routes/rate.route.js"
 
 dotenv.config();
 
@@ -22,12 +24,14 @@ app.listen(3000, ()=>{
 })
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/api",testRoutes);
 app.use("/api/auth",authRoutes);
 app.use("/api/product",productRoutes);
 app.use("/api/category",categoryRoutes);
 app.use("/api/cart",cartRoutes);
 app.use("/api/order",orderRoutes);
+app.use("/api/rate",rateRoutes)
 
 app.get('/',(req,res)=> {
     res.send('Hello World');

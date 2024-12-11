@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import { login } from '../redux/user/userSlice';
 import { useDispatch,useSelector } from 'react-redux';
 
@@ -58,6 +58,9 @@ export default function Login() {
         <div className="pt-3 flex gap-3">
           <label htmlFor="password">Mật khẩu</label>
           <input onChange={handleChange} className="border" type="password" id="password" name="password" required />
+        </div>
+        <div className=''>
+        Chưa có tài khoản?<Link className='hover:underline' to="/register">Đăng ký</Link>
         </div>
         <div className="flex justify-center mt-4">
         <button type="submit" className="border bg-green-400 hover:bg-white hover:text-green-400 text-white px-3 py-1">Đăng nhập</button>

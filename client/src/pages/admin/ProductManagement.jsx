@@ -29,20 +29,37 @@ export default function ProductManagement() {
   const [searchProduct, setSearchProduct] = useState("");
   const [isLoadingThumbnail, setIsLoadingThumbnail] = useState(false);
   const [isLoadingProductDetail, setIsLoadingProductDetail] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 8;
+  const [productLength, setProductLength] = useState(0);
+
+  let pageToShow = productLength / limit;
+  if (productLength % limit !== 0) {
+    pageToShow += 1;
+  }
 
   useEffect(() => {
     if (searchProduct !== "") return;
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/product/get-product");
+        const res = await fetch(
+          `/api/product/get-product?page=${page}&limit=${limit}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await res.json();
-        setProducts(data);
+        setProducts(data.products);
+        setProductLength(data.product);
       } catch (error) {
         console.log(error);
       }
     };
     fetchProducts();
-  }, [searchProduct]);
+  }, [searchProduct, page]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -98,17 +115,13 @@ export default function ProductManagement() {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // Optional: Handle progress here if needed
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
         },
         (error) => {
-          // Handle unsuccessful uploads
-          console.error("Upload failed:", error);
+          console.error("Tải lên thất bại:", error);
         },
         () => {
-          // Handle successful uploads on complete
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setFormData({ ...formData, thumbnail: downloadURL });
             setIsLoadingThumbnail(false);
@@ -116,7 +129,7 @@ export default function ProductManagement() {
         }
       );
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Có lỗi khi tải lên:", error);
     }
   };
 
@@ -128,7 +141,7 @@ export default function ProductManagement() {
       const storage = getStorage(app);
 
       const uploadPromises = Array.from(files).map((fileImage, index) => {
-        const fileName = `${new Date().getTime()}-${index}-${fileImage.name}`; // Unique filename per image
+        const fileName = `${new Date().getTime()}-${index}-${fileImage.name}`;
         const storageRef = ref(storage, fileName);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
 
@@ -149,7 +162,7 @@ export default function ProductManagement() {
       setFormData({ ...formData, images: downloadURLs });
       setIsLoadingProductDetail(false);
     } catch (error) {
-      console.log("Error uploading images:", error);
+      console.log("Có lỗi khi tải ảnh:", error);
     }
   };
 
@@ -168,6 +181,7 @@ export default function ProductManagement() {
       setFormData({});
       setProducts([...products, data]);
     } catch (error) {
+      alert("Phiên đăng nhập hết hạn");
       console.log(error);
     }
   };
@@ -204,7 +218,7 @@ export default function ProductManagement() {
       <div className="mb-4 text-lg text-gray-600">
         Số lượng sản phẩm:
         <span className="font-semibold text-gray-800 ml-2">
-          {products.length}
+          {productLength}
         </span>
       </div>
 
@@ -224,7 +238,13 @@ export default function ProductManagement() {
           Thêm sản phẩm
         </button>
       </div>
-
+      <div>
+        {Array.from({ length: pageToShow }, (_, index) => (
+          <button key={index} type="button" onClick={() => setPage(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
+      </div>
       <div className="overflow-x-auto mb-5 text-sm flex flex-wrap items-center justify-between gap-4 bg-white shadow-md rounded-lg p-4">
         <div className="w-1/12">Hình ảnh</div>
         <div className="flex-1 w-5/12 text-gray-800 font-medium">
