@@ -12,7 +12,7 @@ import {
   searchProductForUsers,
   getProductByCategory,
 } from "../controllers/product.controller.js";
-import { verifyToken } from "../utils/verifyuser.js";
+import { verifyToken } from "../utils/verifyUser.js";
 const router = express.Router();
 
 router.post("/create-product", verifyToken, createProduct);
